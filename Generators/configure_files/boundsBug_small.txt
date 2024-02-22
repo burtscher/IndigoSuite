@@ -1,0 +1,13 @@
+/* boundsBug with small graphs*/
+CODE:
+	bug: 		{hasbug}
+	pattern: 	{all}
+	option: 	{boundsBug}
+	dataType: 	{int}
+
+INPUTS:
+    direction: 		{undirected}
+    pattern: 		{all}
+    rangeNumV: 		{0-10}
+    rangeNumE: 		{0-inf}
+    samplingRate: 	100%

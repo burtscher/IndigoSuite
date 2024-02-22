@@ -1,0 +1,60 @@
+typedef int data_t; /*@long@*/ typedef unsigned long long data_t; /*@short@*/ typedef unsigned short data_t; /*@char@*/ typedef signed char data_t;
+
+#include "indigo_openmp.h"
+
+void omp_code(int* nindex, int* nlist, data_t* data1, data_t* data2, int numv)
+{
+  # pragma omp parallel for /*@dynamic@*/ #pragma omp parallel for schedule(dynamic)
+  for (int i = 0; i < numv; i++) {
+    int beg = nindex[i];
+    int end = nindex[i + 1];
+    if (beg < end) { /*@boundsBug@*/
+      int j = beg; /*@last@*/ int j = end - 1;
+      int nei = nlist[j];
+      if (i < nei) {
+        data_t pos;
+        #pragma omp atomic capture /*@atomicBug@*/
+        pos = data2[0]++;
+        data1[pos] = (data_t)j;
+      }
+    } /*@boundsBug@*/
+  }
+}
+
+void serial_code(int* nindex, int* nlist, data_t* data1, data_t* data2, int numv)
+{
+  for (int i = 0; i < numv; i++) {
+    int beg = nindex[i];
+    int end = nindex[i + 1];
+    if (beg < end) {
+      int j = beg; /*@last@*/ int j = end - 1;
+      int nei = nlist[j];
+      if (i < nei) {
+        data_t pos = data2[0]++;
+        data1[pos] = (data_t)j;
+      }
+    }
+  }
+}
+
+int compare (const void* a, const void* b)
+{
+  return *(data_t*)a - *(data_t*)b;
+}
+
+int verify_result(int* nindex, int* nlist, data_t* h_data1, data_t* h_data2, data_t* d_data1, data_t* d_data2, int numv, int nume)
+{
+  if (h_data2[0] != d_data2[0]) {
+    return 0;
+  }
+
+  qsort(h_data1, h_data2[0], sizeof(data_t), compare);
+  qsort(d_data1, d_data2[0], sizeof(data_t), compare);
+
+  for (int i = 0; i < h_data2[0]; i++) {
+    if (h_data1[i] != d_data1[i]) {
+      return 0;
+    }
+  }
+  return 1;
+}

@@ -1,0 +1,13 @@
+/* bug-free codes with all graph patterns */
+CODE:
+	bug: 		{nobug}
+	pattern: 	{all}
+	option: 	{all}
+	dataType: 	{int}
+
+INPUTS:
+    direction: 		{undirected}
+    pattern: 		{all}
+    rangeNumV: 		{0-10}
+    rangeNumE: 		{0-inf}
+    samplingRate: 	100%

@@ -1,0 +1,63 @@
+typedef int data_t; /*@long@*/ typedef unsigned long long data_t; /*@float@*/ typedef float data_t; /*@double@*/ typedef double data_t; /*@char@*/ typedef char data_t; /*@short@*/ typedef short data_t;
+#include "indigo_cuda.h"
+
+__global__ void test_kernel(int* nindex, int* nlist, data_t* data1, data_t* data2, int numv)
+{
+  int i = threadIdx.x + blockIdx.x * blockDim.x; /*@persistent@*/ int idx = threadIdx.x + blockIdx.x * blockDim.x; /*@boundsBug@*/ int i = threadIdx.x + blockIdx.x * blockDim.x;
+  if (i < numv) { /*@persistent@*/ for (int i = idx; i < numv; i += gridDim.x * blockDim.x) { /*@boundsBug@*/
+    int beg = nindex[i];
+    int end = nindex[i + 1];
+    for (int j = beg; j < end; j++) { /*@reverse@*/ for (int j = end - 1; j >= beg; j--) {
+      int nei = nlist[j];
+      if (i < nei) {
+        data_t pos = atomicAdd(data2, (data_t)1); /*@atomicBug@*/ data_t pos = data2[0]++;
+        data1[pos] = (data_t)j;
+        /*@break@*/ break;
+      }
+    }
+  } /*@persistent@*/ } /*@boundsBug@*/
+}
+
+void serial_code(int* nindex, int* nlist, data_t* data1, data_t* data2, int numv)
+{
+  for (int i = 0; i < numv; i++) {
+    int beg = nindex[i];
+    int end = nindex[i + 1];
+    for (int j = beg; j < end; j++) { /*@reverse@*/ for (int j = end - 1; j >= beg; j--) {
+      int nei = nlist[j];
+      if (i < nei) {
+        data_t pos = data2[0]++;
+        data1[pos] = (data_t)j;
+        /*@break@*/ break;
+      }
+    }
+  }
+}
+
+int compare(const void* a, const void* b)
+{
+  if (*(data_t*)a < *(data_t*)b) return -1;
+  if (*(data_t*)a == *(data_t*)b) return 0;
+  return 1;
+}
+
+int verify_result(int* nindex, int* nlist, data_t* h_data1, data_t* h_data2, data_t* d_data1, data_t* d_data2, int numv, int nume, int blocks, int threadsperblock)
+{
+  if (numv > blocks * threadsperblock) { /*@persistent@*/ /*@boundsBug@*/ if (numv > blocks * threadsperblock) {
+    printf("Error: too few threads\n"); /*@persistent@*/ /*@boundsBug@*/ printf("Error: too few threads\n");
+    return -1; /*@persistent@*/ /*@boundsBug@*/ return -1;
+  } /*@persistent@*/ /*@boundsBug@*/ }
+  if (h_data2[0] != d_data2[0]) {
+    return 0;
+  }
+
+  qsort(h_data1, h_data2[0], sizeof(data_t), compare);
+  qsort(d_data1, d_data2[0], sizeof(data_t), compare);
+
+  for (int i = 0; i < h_data2[0]; i++) {
+    if (h_data1[i] != d_data1[i]) {
+      return 0;
+    }
+  }
+  return 1;
+}

@@ -1,0 +1,33 @@
+/*************************************************************************************************************
+1. All the configure options
+CODE:
+	bug: 		/* hasbug, nobug */
+	pattern: 	/* conditional_vertex, conditional_edge, path_compression, populate_worklist, pull_node, push_node */
+	option: 	/* atomicBug, boundsBug, syncBug, race, cond, break, persistent, zero, first, last, shfl */
+	dataType: 	/* int, short, long, float, double, char */
+
+INPUTS:
+    direction: 		/* directed, undirected */
+    pattern: 		/* DAG, k_max_degree, power_law, uniform_degree, all_possible_graphs,
+    				   binary_forest, binary_tree, k_dim_grid, d_dim_torus, rand_neighbor, simple_planar, star */
+    rangeNumV: 		range of number of vertices
+    rangeNumE: 		range of number of edges
+    samplingRate: 	100% rate produces the whole set of the graphs
+
+2. The keyword 'all' means to select all choices, e.g., option: {all} means to include all the options
+3. You can add '~' before each element in the pattern and option, e.g., {~atomicBug} means not to contain atomicBug
+4. You can add 'only_' before the option, e.g., only_atomicBug means only to contain atomicBug
+***********************************************************************************************************/
+
+CODE:
+    bug:        {all}
+    pattern:    {all}
+    option:     {all}
+    dataType:   {int}
+
+INPUTS:
+    direction:      {all}
+    pattern:        {all}
+    rangeNumV:      {0-200}
+    rangeNumE:      {0-inf}
+    samplingRate:   100%

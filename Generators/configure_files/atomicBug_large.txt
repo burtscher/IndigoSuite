@@ -1,0 +1,13 @@
+/* atomicBug with large graphs */
+CODE:
+	bug: 		{hasbug}
+	pattern: 	{all}
+	option: 	{atomicBug}
+	dataType: 	{int}
+
+INPUTS:
+    direction: 		{all}
+    pattern: 		{all}
+    rangeNumV: 		{50-1000}
+    rangeNumE: 		{0-inf}
+    samplingRate: 	50%

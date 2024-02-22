@@ -1,0 +1,79 @@
+typedef int data_t; /*@long@*/ typedef unsigned long long data_t; /*@float@*/ typedef float data_t; /*@double@*/ typedef double data_t; /*@char@*/ typedef char data_t; /*@short@*/ typedef short data_t;
+
+#include "indigo_cuda.h"
+
+__global__ void test_kernel(int* nindex, int* nlist, data_t* data1, data_t* data2, int numv)
+{
+  __shared__ data_t s_carry[1024]; /*@shfl@*/ __shared__ data_t s_carry[32];
+  int tid = threadIdx.x; /*@shfl@*/ int lane = threadIdx.x % 32;
+  /*@shfl@*/ int warp = threadIdx.x / 32;
+  s_carry[tid] = 0; /*@shfl@*/ if (warp == 0) s_carry[lane] = 0;
+
+  int i = blockIdx.x; /*@persistent@*/
+  if (i < numv) { /*@persistent@*/ for (int i = blockIdx.x; i < numv; i += gridDim.x) {
+    __syncthreads();
+    int beg = nindex[i];
+    int end = nindex[i + 1];
+    data_t val = 0;
+    for (int j = beg + threadIdx.x; j < end; j += blockDim.x) { /*@reverse@*/ for (int j = end - 1 - threadIdx.x; j >= beg; j -= blockDim.x) {
+      int nei = nlist[j];
+      /*@cond@*/ if (i < nei) {
+        val += data2[nei];
+      /*@cond@*/ }
+    }
+    /*@shfl@*/ for (int d = 1; d < 32; d *= 2) {
+      /*@shfl@*/ val += __shfl_up_sync(~0, val, d);
+    /*@shfl@*/ }
+    /*@shfl@*/ if (lane == 31) s_carry[warp] = val;
+    s_carry[tid] = val; /*@shfl@*/
+    __syncthreads(); /*@syncBug@*/
+
+    for (int stride = blockDim.x / 2; stride > 0 ; stride >>= 1) { /*@shfl@*/
+      if (tid < stride) { /*@shfl@*/
+        s_carry[tid] += s_carry[tid + stride]; /*@shfl@*/
+      } /*@shfl@*/
+      __syncthreads(); /*@shfl@*/
+    } /*@shfl@*/
+    if (tid == 0) data1[i] += s_carry[0]; /*@shfl@*/
+    /*@shfl@*/ if (warp == 0) {
+      /*@shfl@*/ val = s_carry[lane];
+      /*@shfl@*/ for (int d = 1; d < 32; d *= 2) {
+        /*@shfl@*/ val += __shfl_up_sync(~0, val, d);
+      /*@shfl@*/ }
+    /*@shfl@*/
+    /*@shfl@*/ if (lane == 31) data1[i] += val;
+    /*@shfl@*/ }
+  }
+}
+
+void serial_code(int* nindex, int* nlist, data_t* data1, data_t* data2, int numv)
+{
+  for (int i = 0; i < numv; i++) {
+    int beg = nindex[i];
+    int end = nindex[i + 1];
+    for (int j = beg; j < end; j++) {
+      int nei = nlist[j];
+      /*@cond@*/ if (i < nei) {
+        data1[i] += data2[nei];
+      /*@cond@*/ }
+    }
+  }
+}
+
+int verify_result(int* nindex, int* nlist, data_t* h_data1, data_t* h_data2, data_t* d_data1, data_t* d_data2, int numv, int nume, int blocks, int threadsperblock)
+{
+  if (numv > blocks) { /*@persistent@*/
+    printf("Error: too few threads\n"); /*@persistent@*/
+    return -1; /*@persistent@*/
+  } /*@persistent@*/
+  if (threadsperblock % 32 != 0) {
+    printf("Error: partial warps not supported\n");
+    return -1;
+  }
+  for (int i = 0; i < numv; i++) {
+    if (h_data1[i] != d_data1[i]) {
+      return 0;
+    }
+  }
+  return 1;
+}

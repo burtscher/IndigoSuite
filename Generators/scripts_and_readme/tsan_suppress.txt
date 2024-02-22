@@ -1,0 +1,2 @@
+# suppress all data races in indigo_openmp.h file
+race:include/indigo_openmp.h
