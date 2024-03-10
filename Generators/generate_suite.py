@@ -34,7 +34,7 @@ def write_copyright(in_path, out_path, c_lines, in_file_name):
 
 # read the copyright file to determine the version number and suite directory name
 current_path = os.getcwd()
-copyright_path = os.path.join(current_path, 'copyright.txt')
+copyright_path = os.path.join(current_path, '../copyright.txt')
 copyright_file = open(copyright_path, 'r')
 c_lines = copyright_file.readlines()
 copyright_file.close()
@@ -111,8 +111,8 @@ for root, dirctories, files in walk_openmp:
 os.system('chmod +x generate_graphs.py')
 os.system('./generate_graphs.py %s' % graph_out)
 
-zip_filename = out_directory + '.zip'
-tgz_filename = out_directory + '.tgz'
+#zip_filename = out_directory + '.zip'
+#tgz_filename = out_directory + '.tgz'
 # compress the suite
-os.system('zip -r %s %s' % (zip_filename, out_directory))
-os.system('tar -czf %s %s' % (tgz_filename, out_directory))
+#os.system('zip -r %s %s' % (zip_filename, out_directory))
+#os.system('tar -czf %s %s' % (tgz_filename, out_directory))

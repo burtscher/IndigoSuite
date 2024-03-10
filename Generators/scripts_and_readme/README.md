@@ -1,12 +1,12 @@
 # IndigoSuite
 
 ### About the Suite
-The Indigo suite contains scripts to compile and run the CUDA and OpenMP microbenchmarks
+The Indigo suite contains scripts to compile and run the CUDA and OpenMP microbenchmarks.
 
 ### Minimum Requirements
-We assume an OpenMP-capable compiler with ThreadSanitizer support
+We assume an OpenMP-capable compiler with ThreadSanitizer support.
 
-We assume a CUDA-enabled GPU that supports compute capability 3.5 or higher
+We assume a CUDA-enabled GPU that supports compute capability 3.5 or higher.
 
 ### Directory layout
     .

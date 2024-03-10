@@ -9,7 +9,7 @@ We assume an OpenMP-capable compiler with ThreadSanitizer support and a CUDA-ena
 ### How to Generate the Suite
 * Run the `generate_suite.py` script in the `Generator` directory to create the suite.
 ```
-$ chmod +x generate_suite.py
+$ cd Generators
 $ ./generate_suite.py
 ```
 * The suite is written into the `/Generators/IndigoSuite_VERSION` directory.

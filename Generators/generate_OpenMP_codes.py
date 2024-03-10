@@ -5,6 +5,12 @@ import sys
 import os
 import re
 
+def needBugComment(tag, code):
+    if ("boundsbug" not in tag.lower() and "bug" in tag.lower() and code) or ("boundsbug" in tag.lower() and not code): # if Race or Bug
+        return True
+    else:
+        return False
+
 # filter data type
 def filter_datat(idg_file, code_file, dataType):
 	if 'all' in dataType:
@@ -179,7 +185,6 @@ if (f_pattern):
 			out_file_name = out_file_name + '.c'
 			complete_file_name = os.path.join(save_path, out_file_name)
 			output_file = open(complete_file_name, 'w')
-			num_codes = num_codes + 1
 			lspace = 0
 
 			copyright_file = open(args[2], 'r')
@@ -206,6 +211,10 @@ if (f_pattern):
 						for k in p_all_tags[i]:
 							if line_tags[j] == k:
 								code = re_split[j].strip() # remove the leading and trailing space
+								
+								if k and needBugComment(k, code):
+									code = "// " + k + " here\n" + ' ' * lspace + code
+								
 								break
 					if code:
 						ostr = code

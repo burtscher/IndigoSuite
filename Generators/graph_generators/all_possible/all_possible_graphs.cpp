@@ -52,13 +52,13 @@ int main(int argc, char* argv[])
       // save the graph in CSR format, print the histogram
       char name[256];
       if (symmetric && filter_nume(e) && filter_numv(n) && ((flag == 0) || (flag == 1))) {
-        sprintf(name, "undirected_all_possible_graph_%d_%dn_%de.egr", i, n, e);
+        sprintf(name, "undirected_all_possible_graphs_%d_%dn_%de.egr", i, n, e);
         printf("undirected_graph\n");
         saveAndPrint(n, e, name, edges);
       }
       if (!symmetric && filter_nume(e) && filter_numv(n) && ((flag == 0) || (flag == 2))){
-        sprintf(name, "all_possible_graph_%d_%dn_%de.egr", i, n, e);
-        printf("all_possible_graph\n");
+        sprintf(name, "all_possible_graphs_%d_%dn_%de.egr", i, n, e);
+        printf("all_possible_graphs\n");
         saveAndPrint(n, e, name, edges);
       }
       delete [] edges;

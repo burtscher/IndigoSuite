@@ -11,10 +11,10 @@ void omp_code(int* nindex, int* nlist, data_t* data1, data_t* data2, int numv)
     if (beg < end) { /*@boundsBug@*/
       int nei = nlist[beg]; /*@last@*/ int nei = nlist[end - 1];
       /*@cond@*/ if (i < nei) {
-        /*@guardBug*/ if (data1[0] < data2[nei]) {
+        /*@guardBug@*/ if (data1[0] < data2[nei]) {
           #pragma omp reduction(max:data1[0]) /*@atomicBug@*/
           data1[0] =  (data1[0] < data2[nei]) ? data2[nei] : data1[0];
-        /*@guardBug*/ }
+        /*@guardBug@*/ }
       /*@cond@*/ }
     } /*@boundsBug@*/
   }
