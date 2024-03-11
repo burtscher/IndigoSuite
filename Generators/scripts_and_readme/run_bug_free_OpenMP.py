@@ -33,7 +33,7 @@ for subdir in code_subdir:
             if code_file.endswith('.c') and all([b not in code_file for b in bugs]):
                 kernel_path = test_path + '/' + code_file
                 print('\ncompile: %s\n' % code_file)
-                os.system('clang -fopenmp -O3 -g -Iinclude -fsanitize=thread %s -o microbenchmark' % kernel_path)
+                os.system('g++ -fopenmp -O3 -g -Iinclude -fsanitize=thread %s -o microbenchmark' % kernel_path)
                 for graph_dir in input_subdir:
                     walk_graph = os.walk(os.path.join(input_path, graph_dir))
                     for root, dircs, graph_files in walk_graph:
