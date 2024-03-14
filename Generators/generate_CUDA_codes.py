@@ -6,7 +6,7 @@ import os
 import re
 
 def needBugComment(tag, code):
-    if ("boundsbug" not in tag.lower() and "bug" in tag.lower() and code) or ("boundsbug" in tag.lower() and not code): # if Race or Bug
+    if ("boundsbug" not in tag.lower() and "bug" in tag.lower() and code) or ("boundsbug" in tag.lower() and not code): # if Bug with code or boundsBug with no code
         return True
     else:
         return False
@@ -186,7 +186,7 @@ if (f_pattern):
 				os.chdir(cur_path)
 			out_file_name = out_file_name + '.cu'
 			complete_file_name = os.path.join(save_path, out_file_name)
-			output_file = open(complete_file_name, 'w')
+			output_file = open(complete_file_name, 'w+')
 			lspace = 0
 
 			copyright_file = open(args[2], 'r')
@@ -197,7 +197,10 @@ if (f_pattern):
 			output_file.write(' */\n\n')
 			copyright_file.close()
 
+			isSerial = False
 			for l in lines: # write codes
+				if "serial_code" in l:
+					isSerial = True
 				ostr = ''
 				if (re.search('\/\*\@[a-zA-Z]*[0-9]*\@\*\/', l)): # search for the tag
 					re_tags = re.findall('\/\*\@[a-zA-Z]*[0-9]*\@\*\/', l)
@@ -214,7 +217,7 @@ if (f_pattern):
 							if line_tags[j] == k:
 								code = re_split[j].strip() # remove the leading and trailing space
 								
-								if k and needBugComment(k, code):
+								if k and not isSerial and needBugComment(k, code):
 									code = "// " + k + " here\n" + ' ' * lspace + code
 								
 								break
