@@ -28,6 +28,6 @@ If you use Indigo, please cite the following publication.
 [[pptx]](http://www.cs.txstate.edu/~mb92/research/IndigoSuite/ispass22.pptx)
 [[video]](http://www.cs.txstate.edu/~mb92/research/IndigoSuite/YiqianISPASS22.mp4)
 
-You may also be interested in the follow-on suites [Indigo2](https://cs.txstate.edu/~burtscher/research/Indigo2Suite/) and [Indigo3](https://github.com/burtscher/Indigo3Suite).
+You may also be interested in the follow-on suites [Indigo2](https://cs.txstate.edu/~burtscher/research/Indigo2Suite/) and [Indigo3](https://github.com/burtscher/Indigo3Suite) as well as in the related [ECL-Suite](https://github.com/burtscher/ECL-Suite/).
 
 *This work has been supported in part by the National Science Foundation under Grant No. 1955367 as well as by an equipment donation from NVIDIA Corporation.*
